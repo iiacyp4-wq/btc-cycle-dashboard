@@ -80,11 +80,11 @@ function renderDashboard(opts) {
   document.getElementById('footer-src').textContent = (window.ZMVRV_SAMPLE ? '⚠ 샘플 데이터 (data/zmvrv.js 없음) · ' : '') + '출처: ' + lastGood.source + ' · 매일 자동 갱신 · 계산식: (시가총액 − 실현시총) ÷ 표준편차';
 
   // range toggle
-  let range = 'ALL';
+  let range = 'ALL', zoom = null;
   try { range = localStorage.getItem('zmvrv-range') || '3Y'; } catch (e) { range = '3Y'; }
   const rangeBtns = document.querySelectorAll('#ranges button');
   const setRange = r => {
-    range = r; try { localStorage.setItem('zmvrv-range', r); } catch (e) {}
+    range = r; zoom = null; try { localStorage.setItem('zmvrv-range', r); } catch (e) {}
     rangeBtns.forEach(b => b.classList.toggle('active', b.dataset.r === r));
     draw();
   };
@@ -101,7 +101,8 @@ function renderDashboard(opts) {
     const ctx = canvas.getContext('2d'); ctx.scale(dpr, dpr);
     const yrs = range === '1Y' ? 1 : range === '3Y' ? 3 : 99;
     const cutoff = new Date(todayUTC.getTime() - yrs * 365 * 86400000).toISOString().slice(0, 10);
-    const data = rows.filter(r => r.date >= cutoff);
+    const data = zoom ? rows.filter(r => r.date >= zoom[0] && r.date <= zoom[1]) : rows.filter(r => r.date >= cutoff);
+    rangeBtns.forEach(b => b.classList.toggle('active', !zoom && b.dataset.r === range));
     const pad = { l: 36, r: 12, t: 10, b: 24 };
     const vals = data.filter(r => r.value != null).map(r => r.value);
     const yMin = Math.min(-1, Math.floor(Math.min(...vals)) - 0.5);
@@ -124,7 +125,8 @@ function renderDashboard(opts) {
     }
     // x labels (Jan of each year)
     ctx.textAlign = 'center';
-    data.forEach((r, i) => { if (r.date.endsWith('-01-01') || (yrs === 1 && r.date.endsWith('-01'))) ctx.fillText(yrs === 1 ? r.date.slice(5, 7) + '월' : r.date.slice(0, 4), x(i), H - 6); });
+    const span = data.length; const mode = span > 800 ? 'y' : span > 90 ? 'm' : 'd';
+    data.forEach((r, i) => { const hit = mode === 'y' ? r.date.endsWith('-01-01') : mode === 'm' ? r.date.endsWith('-01') : i % Math.ceil(span / 8) === 0; if (hit) ctx.fillText(mode === 'y' ? r.date.slice(0, 4) : mode === 'm' ? r.date.slice(2, 7) : r.date.slice(5), x(i), H - 6); });
     // line (gap on missing)
     ctx.strokeStyle = colors.line; ctx.lineWidth = 1.6; ctx.beginPath(); let pen = false;
     pts = [];
@@ -141,7 +143,7 @@ function renderDashboard(opts) {
     ctx.fillStyle = colors.latest; ctx.beginPath(); ctx.arc(x(li), y(data[li].value), 5, 0, 7); ctx.fill();
     ctx.strokeStyle = colors.latestRing; ctx.lineWidth = 2; ctx.stroke();
   }
-  canvas.onmousemove = canvas.ontouchstart = e => {
+  const hover = e => {
     const rect = canvas.getBoundingClientRect();
     const cx = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
     let best = null; for (const p of pts) if (!best || Math.abs(p.px - cx) < Math.abs(best.px - cx)) best = p;
@@ -150,7 +152,36 @@ function renderDashboard(opts) {
     tip.innerHTML = best.r.date + ' · <b>' + best.r.value.toFixed(2) + '</b>' + (best.r.status === 'suspicious' ? ' <span class="susp">의심</span>' : '');
     tip.style.left = Math.min(best.px, canvas.clientWidth - 150) + 'px'; tip.style.top = (best.py - 36) + 'px';
   };
-  canvas.onmouseleave = () => tip.style.display = 'none';
+  attachZoom(canvas, { getPts: () => pts, onZoom: (a, b) => { zoom = [a, b]; draw(); }, onReset: () => { zoom = null; draw(); },
+    onHover: hover, onLeave: () => tip.style.display = 'none', color: colors.zoomFill || 'rgba(255,255,255,.08)', border: colors.line });
   window.addEventListener('resize', draw);
   setRange(range);
+}
+
+/* ---------- drag-to-zoom (shared by both charts) ----------
+   Drag a box on the chart → zoom to that date span. Double-click or a range button → reset.
+   attachZoom(canvas, {getPts, onZoom, onReset, color, onHover, onLeave}) */
+function attachZoom(canvas, o) {
+  let dragging = false, x0 = 0, x1 = 0, moved = false;
+  const overlay = document.createElement('div');
+  overlay.style.cssText = 'position:absolute;top:0;bottom:0;display:none;pointer-events:none;background:' + o.color + ';border-left:1px solid ' + o.border + ';border-right:1px solid ' + o.border + ';';
+  canvas.parentNode.appendChild(overlay);
+  const cx = e => (e.touches ? e.touches[0].clientX : e.clientX) - canvas.getBoundingClientRect().left;
+  const show = () => { const l = Math.min(x0, x1), r = Math.max(x0, x1); overlay.style.display = 'block'; overlay.style.left = l + 'px'; overlay.style.width = (r - l) + 'px'; };
+  const start = e => { dragging = true; moved = false; x0 = x1 = cx(e); if (o.onLeave) o.onLeave(); };
+  const move = e => { if (!dragging) { if (o.onHover) o.onHover(e); return; } x1 = cx(e); if (Math.abs(x1 - x0) > 3) moved = true; show(); e.preventDefault && e.preventDefault(); };
+  const end = () => {
+    if (!dragging) return; dragging = false; overlay.style.display = 'none';
+    if (!moved) return;
+    const pts = o.getPts(); if (pts.length < 2) return;
+    const l = Math.min(x0, x1), r = Math.max(x0, x1);
+    const near = px => pts.reduce((b, p) => Math.abs(p.px - px) < Math.abs(b.px - px) ? p : b);
+    const a = near(l).r.date, b = near(r).r.date;
+    if (a !== b) o.onZoom(a, b);
+  };
+  canvas.addEventListener('mousedown', start); canvas.addEventListener('mousemove', move);
+  window.addEventListener('mouseup', end); canvas.addEventListener('mouseleave', () => { if (!dragging && o.onLeave) o.onLeave(); });
+  canvas.addEventListener('touchstart', start, { passive: true }); canvas.addEventListener('touchmove', move, { passive: false }); canvas.addEventListener('touchend', end);
+  canvas.addEventListener('dblclick', () => o.onReset());
+  canvas.style.cursor = 'crosshair';
 }

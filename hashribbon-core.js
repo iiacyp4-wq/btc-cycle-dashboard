@@ -39,10 +39,10 @@ function renderHashRibbon(opts) {
   el('hr-footer').textContent = `출처: ${last.source} · 규칙: Capriole Hash Ribbons (30/60일 해시레이트 평균, 가격 10/20일 평균) · 마지막 데이터 ${last.date} UTC`;
 
   // range toggle (own key)
-  let range = '3Y';
+  let range = '3Y', zoom = null;
   try { range = localStorage.getItem('hr-range') || '3Y'; } catch (e) {}
   const btns = document.querySelectorAll('#hr-ranges button');
-  const setRange = r => { range = r; try { localStorage.setItem('hr-range', r); } catch (e) {} btns.forEach(b => b.classList.toggle('active', b.dataset.r === r)); draw(); };
+  const setRange = r => { range = r; zoom = null; try { localStorage.setItem('hr-range', r); } catch (e) {} btns.forEach(b => b.classList.toggle('active', b.dataset.r === r)); draw(); };
   btns.forEach(b => b.onclick = () => setRange(b.dataset.r));
 
   // chart
@@ -55,7 +55,8 @@ function renderHashRibbon(opts) {
     const ctx = canvas.getContext('2d'); ctx.scale(dpr, dpr);
     const yrs = range === '1Y' ? 1 : range === '3Y' ? 3 : 99;
     const cutoff = new Date(todayUTC.getTime() - yrs * 365 * 86400000).toISOString().slice(0, 10);
-    const data = good.filter(r => r.date >= cutoff);
+    const data = zoom ? good.filter(r => r.date >= zoom[0] && r.date <= zoom[1]) : good.filter(r => r.date >= cutoff);
+    btns.forEach(b => b.classList.toggle('active', !zoom && b.dataset.r === range));
     const pad = { l: 44, r: 12, t: 10, b: 40 };
     const vals = data.flatMap(r => [r.hr30, r.hr60]);
     const yMin = Math.min(...vals) * 0.95, yMax = Math.max(...vals) * 1.03;
@@ -76,7 +77,8 @@ function renderHashRibbon(opts) {
       ctx.fillText(v >= 1 ? v.toFixed(0) : v.toFixed(2), pad.l - 6, y(v) + 4);
     }
     ctx.textAlign = 'center';
-    data.forEach((r, i) => { if (r.date.endsWith('-01-01') || (yrs === 1 && r.date.endsWith('-01'))) ctx.fillText(yrs === 1 ? r.date.slice(5, 7) + '월' : r.date.slice(0, 4), x(i), H - 22); });
+    const span = data.length; const mode = span > 800 ? 'y' : span > 90 ? 'm' : 'd';
+    data.forEach((r, i) => { const hit = mode === 'y' ? r.date.endsWith('-01-01') : mode === 'm' ? r.date.endsWith('-01') : i % Math.ceil(span / 8) === 0; if (hit) ctx.fillText(mode === 'y' ? r.date.slice(0, 4) : mode === 'm' ? r.date.slice(2, 7) : r.date.slice(5), x(i), H - 22); });
     // lines
     const line = (key, color, w) => { ctx.strokeStyle = color; ctx.lineWidth = w; ctx.beginPath(); data.forEach((r, i) => i ? ctx.lineTo(x(i), y(r[key])) : ctx.moveTo(x(i), y(r[key]))); ctx.stroke(); };
     line('hr60', c.hr60, 1.4); line('hr30', c.hr30, 1.8);
@@ -92,7 +94,7 @@ function renderHashRibbon(opts) {
     });
   }
   function niceStep(raw) { const p = Math.pow(10, Math.floor(Math.log10(raw))); const m = raw / p; return (m < 1.5 ? 1 : m < 3.5 ? 2 : m < 7.5 ? 5 : 10) * p; }
-  canvas.onmousemove = canvas.ontouchstart = e => {
+  const hover = e => {
     const rect = canvas.getBoundingClientRect();
     const cx = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left;
     let best = null; for (const p of pts) if (!best || Math.abs(p.px - cx) < Math.abs(best.px - cx)) best = p;
@@ -103,7 +105,8 @@ function renderHashRibbon(opts) {
     tip.innerHTML = `${r.date} · 30d <b>${r.hr30.toFixed(0)}</b> / 60d ${r.hr60.toFixed(0)} EH/s · $${r.price.toLocaleString()}${tag}`;
     tip.style.left = Math.min(best.px, canvas.clientWidth - 260) + 'px'; tip.style.top = '6px';
   };
-  canvas.onmouseleave = () => tip.style.display = 'none';
+  attachZoom(canvas, { getPts: () => pts, onZoom: (a, b) => { zoom = [a, b]; draw(); }, onReset: () => { zoom = null; draw(); },
+    onHover: hover, onLeave: () => tip.style.display = 'none', color: 'rgba(255,255,255,.08)', border: c.hr30 });
   window.addEventListener('resize', draw);
   setRange(range);
 }
