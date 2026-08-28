@@ -57,7 +57,7 @@ function renderHashRibbon(opts) {
     const cutoff = new Date(todayUTC.getTime() - yrs * 365 * 86400000).toISOString().slice(0, 10);
     const data = zoom ? good.filter(r => r.date >= zoom[0] && r.date <= zoom[1]) : good.filter(r => r.date >= cutoff);
     btns.forEach(b => b.classList.toggle('active', !zoom && b.dataset.r === range));
-    const pad = { l: 44, r: 12, t: 10, b: 40 };
+    const pad = { l: 44, r: 54, t: 10, b: 40 };
     const vals = data.flatMap(r => [r.hr30, r.hr60]);
     const yMin = Math.min(...vals) * 0.95, yMax = Math.max(...vals) * 1.03;
     const x = i => pad.l + (i / (data.length - 1)) * (W - pad.l - pad.r);
@@ -79,6 +79,15 @@ function renderHashRibbon(opts) {
     ctx.textAlign = 'center';
     const span = data.length; const mode = span > 800 ? 'y' : span > 90 ? 'm' : 'd';
     data.forEach((r, i) => { const hit = mode === 'y' ? r.date.endsWith('-01-01') : mode === 'm' ? r.date.endsWith('-01') : i % Math.ceil(span / 8) === 0; if (hit) ctx.fillText(mode === 'y' ? r.date.slice(0, 4) : mode === 'm' ? r.date.slice(2, 7) : r.date.slice(5), x(i), H - 22); });
+    // BTC price (USD) on a log scale, right axis — priceAxis
+    const pv = data.map(r => r.price).filter(v => v > 0);
+    const pLo = Math.log10(Math.min(...pv) * 0.9), pHi = Math.log10(Math.max(...pv) * 1.1);
+    const yP = v => pad.t + (1 - (Math.log10(v) - pLo) / (pHi - pLo)) * (H - pad.t - pad.b);
+    ctx.textAlign = 'left'; ctx.fillStyle = c.price;
+    const dec = Math.floor(pLo), decHi = Math.ceil(pHi);
+    for (let e = dec; e <= decHi; e++) for (const m of [1, 2, 5]) { const v = m * Math.pow(10, e); if (v >= Math.pow(10, pLo) && v <= Math.pow(10, pHi)) ctx.fillText('$' + (v >= 1000 ? (v / 1000) + 'k' : v), W - pad.r + 6, yP(v) + 4); }
+    ctx.strokeStyle = c.price; ctx.lineWidth = 1.2; ctx.beginPath();
+    data.forEach((r, i) => r.price > 0 && (i ? ctx.lineTo(x(i), yP(r.price)) : ctx.moveTo(x(i), yP(r.price)))); ctx.stroke();
     // lines
     const line = (key, color, w) => { ctx.strokeStyle = color; ctx.lineWidth = w; ctx.beginPath(); data.forEach((r, i) => i ? ctx.lineTo(x(i), y(r[key])) : ctx.moveTo(x(i), y(r[key]))); ctx.stroke(); };
     line('hr60', c.hr60, 1.4); line('hr30', c.hr30, 1.8);

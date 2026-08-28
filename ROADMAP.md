@@ -7,7 +7,7 @@
 
 ## Status board (update every session)
 - **Current week:** W3 (Shadow) · **Repo:** https://github.com/iiacyp4-wq/btc-cycle-dashboard · **Live:** https://iiacyp4-wq.github.io/btc-cycle-dashboard/
-- **Last done:** Hash Ribbon added (Capriole rule reproduced, ADR-005): collector, data, second card on the page, workflow step. Latest buy signal 2026-08-26.
+- **Last done:** Drag-to-zoom on both charts (double-click resets) · BTC price (USD, right log axis) overlaid on the Hash Ribbons chart. Pushed 2026-08-28.
 - **Next step:** 7-day shadow for BOTH indicators (Z-MVRV vs bitcoin-data.com · Hash Ribbon vs TradingView Capriole script). Then W4 Live.
 - **Blockers:** none.
 
@@ -50,3 +50,4 @@
 - **2026-08-28** — Wrote PRD (grilled, narrowed 4 → 1 indicator), TRD with A/B trade-off tables, UI doc + 3 HTML variations (dark terminal chosen), ADR-001~004. W1 verify: `CapRealUSD` is paid-only, but `CapMVRVCur` is free → realized cap derived; Z matches bitcoin-data.com within ±0.03 typical. Built `scripts/collect.js` (idempotent, primary+fallback, sanity rules), workflow, backfilled 2011-07-18→2026-08-27. Page reads `data/zmvrv.js`; sample data only as fallback with a visible warning.
 - **2026-08-28 (later)** — Created public repo `iiacyp4-wq/btc-cycle-dashboard`, pushed everything except the workflow (OAuth token lacks `workflow` scope), enabled Pages → live URL serves real data. Owner added `workflow` scope; workflow pushed and run once (success). Shadow started.
 - **2026-08-28 (evening)** — Hash Ribbon (W6) pulled forward. Reference: TradingView Capriole script; rule reconstructed (30/60d hash-rate SMA, gray/green/blue circles, buy = recovery + price SMA10>SMA20) and validated by reproducing known signals. Data: CoinMetrics `HashRate`+`PriceUSD` free. New: `scripts/collect-hashribbon.js`, `data/hashribbon.*`, `hashribbon-core.js`, second card in `index.html`, ADR-005, workflow step.
+- **2026-08-28 (late)** — UX: drag-to-zoom on both charts (shared `attachZoom` helper in `dashboard-core.js`), BTC price USD overlay on Hash Ribbons (log scale, right axis). Lesson: JS `String.replace` treats `$'` in the replacement as a pattern — corrupted a file once; fixed by hand.

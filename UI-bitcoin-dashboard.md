@@ -65,3 +65,13 @@ Second card directly under Z-MVRV, same width. Mirrors the TradingView Capriole 
 - **Range toggle** `1Y · 3Y · 전체` (remembered separately from the Z-MVRV one).
 - **Tooltip:** date · 30d/60d EH/s · price · tag (`매수 신호` / `항복 시작` / `회복` / `항복 중`).
 - **Empty state:** `"아직 데이터가 없어요 — 첫 수집을 기다리는 중"`.
+
+## Behavior added 2026-08-28 (both charts)
+- **Drag-to-zoom:** mouse-down and drag on a chart draws a translucent box; on release the chart
+  zooms to that date span. X-axis labels switch from years → months → days as the span shrinks.
+  Range buttons un-highlight while zoomed. **Double-click** the chart, or tap any range button,
+  to reset. Touch drag works the same on phones. Hint text next to `"범위"`:
+  `"드래그로 확대 · 더블클릭 원복"`.
+- **Hash Ribbons card — BTC price overlay:** purple line = BTC price in USD on a **right-hand
+  log axis** (`$1k … $100k`), so the ribbon/price relationship reads like the TradingView
+  original even on the `전체` range. Legend entry: `"BTC 가격 USD (우측 축, 로그)"`.

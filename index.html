@@ -52,7 +52,7 @@
   #hr-tooltip .blue { color:#58a6ff; } #hr-tooltip .green { color:var(--green); } #hr-tooltip .gray { color:#8b949e; }
   #hr-legend { display:flex; gap:14px; font-size:11px; color:var(--muted); margin-top:6px; flex-wrap:wrap; }
   #hr-legend i { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:5px; vertical-align:middle; }
-  #hr-legend .l30 { background:var(--accent); } #hr-legend .l60 { background:#c9d1d9; } #hr-legend .lg { background:#8b949e; } #hr-legend .lgr { background:var(--green); } #hr-legend .lb { background:#58a6ff; }
+  #hr-legend .l30 { background:var(--accent); } #hr-legend .l60 { background:#c9d1d9; } #hr-legend .lg { background:#8b949e; } #hr-legend .lgr { background:var(--green); } #hr-legend .lb { background:#58a6ff; } #hr-legend .lp { background:#a371f7; }
 </style>
 </head>
 <body>
@@ -83,7 +83,7 @@
       <button data-r="1Y">1Y</button><button data-r="3Y">3Y</button><button data-r="ALL">전체</button>
     </div></div>
     <div class="chartbox"><canvas id="hr-chart"></canvas><div id="hr-tooltip"></div></div>
-    <div id="hr-legend"><span><i class="l30"></i>해시레이트 30일</span><span><i class="l60"></i>60일</span><span><i class="lg"></i>항복</span><span><i class="lgr"></i>회복</span><span><i class="lb"></i>매수 신호</span></div>
+    <div id="hr-legend"><span><i class="l30"></i>해시레이트 30일</span><span><i class="l60"></i>60일</span><span><i class="lg"></i>항복</span><span><i class="lgr"></i>회복</span><span><i class="lb"></i>매수 신호</span><span><i class="lp"></i>BTC 가격 USD (우측 축, 로그)</span></div>
     <footer><div id="hr-footer"></div><a href="data/hashribbon.csv">$ cat data/hashribbon.csv</a></footer>
   </div>
 </div>
@@ -99,7 +99,7 @@ renderDashboard({
 });
 renderHashRibbon({
   font: 'monospace',
-  colors: { hr30:'#f7931a', hr60:'#c9d1d9', capFill:'rgba(248,81,73,.22)', gray:'#8b949e', green:'#3fb950', blue:'#58a6ff', grid:'#1f2733', muted:'#7d8590' }
+  colors: { hr30:'#f7931a', hr60:'#c9d1d9', capFill:'rgba(248,81,73,.22)', gray:'#8b949e', green:'#3fb950', blue:'#58a6ff', price:'#a371f7', grid:'#1f2733', muted:'#7d8590' }
 });
 </script>
 </body>
