@@ -39,7 +39,7 @@ written here so the "$0" criterion isn't mistaken for the only reason.
 ## 5. Non-Goals (defer) ★ most important  ← Non-Goals (5-box #5)
 | Deferred | Phase | Why not now |
 |---|---|---|
-| Hash Ribbon chart | Phase 2 | Same job as Z-MVRV; add once the one-indicator pipeline is proven. |
+| ~~Hash Ribbon chart~~ | **Shipped 2026-08-28** (ADR-005) | Pulled forward: same data source as Z-MVRV, pipeline proven, added during the shadow week. |
 | Spot-ETF daily net flow chart | Phase 2 | Same as above. Also needs a decision on scope (US-only?) and a weekend/holiday rule. |
 | Stablecoin total market cap chart | Phase 2 | Same as above. Needs a definition (which coins count, de-pegged excluded?). |
 | A combined "where are we in the cycle" verdict when indicators disagree | Phase 2 | Meaningless with one indicator; decide only when there are several. |

@@ -50,3 +50,18 @@ the chart in the middle, a small footer with data provenance at the bottom.
 > from one function `getZMVRV()` that returns `[{date, value, status, source}]` — return
 > realistic sample data for now (the collector will replace it with a CSV fetch). All UI text in
 > Korean exactly as quoted. Make 3 style variations: classic light, dark terminal, editorial."
+
+## Screen: Dashboard — card 2, Hash Ribbons (added 2026-08-28, ADR-005)
+Second card directly under Z-MVRV, same width. Mirrors the TradingView Capriole look.
+
+- **Headline:** current phase in words — `"정상"` (30d > 60d) · `"항복 진행 중"` (gray) ·
+  `"회복 중"` (green) · `"회복 완료 — 가격 모멘텀 대기"`. Sub-line with the two averages in EH/s
+  or `"<date>부터 N일째 · 30일선이 60일선 아래"`.
+- **Signal line:** `"마지막 매수 신호 2026-08-26 (2일 전)"` — highlighted blue when ≤ 30 days old.
+- **Chart:** two lines (30d orange, 60d light grey); the gap between them filled red while in
+  capitulation; a row of circles along the bottom exactly like the reference — gray (capitulation),
+  green (recovering), blue (buy, larger, with a thin line up to the ribbon).
+- **Legend** under the chart: `해시레이트 30일 · 60일 · 항복 · 회복 · 매수 신호`.
+- **Range toggle** `1Y · 3Y · 전체` (remembered separately from the Z-MVRV one).
+- **Tooltip:** date · 30d/60d EH/s · price · tag (`매수 신호` / `항복 시작` / `회복` / `항복 중`).
+- **Empty state:** `"아직 데이터가 없어요 — 첫 수집을 기다리는 중"`.

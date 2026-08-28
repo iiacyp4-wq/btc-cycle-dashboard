@@ -18,6 +18,9 @@ jobs:
           node-version: '20'
       - name: Collect Z-MVRV
         run: node scripts/collect.js
+      - name: Collect Hash Ribbon
+        if: always()
+        run: node scripts/collect-hashribbon.js
       - name: Commit data
         if: always()
         run: |

@@ -3,8 +3,8 @@
 매일 아침 한 번, 비트코인 Z-MVRV를 한 화면에서. 무료 데이터, 서버 없음, $0.
 
 - `index.html` — 대시보드 (더블클릭으로 열림)
-- `scripts/collect.js` — 하루 1회 데이터 수집기 (`node scripts/collect.js`, Node 18+, 설치 패키지 없음)
-- `data/zmvrv.csv` — 2011-07-18부터의 일별 Z-MVRV (`date,value,status,source,note`)
+- `scripts/collect.js` · `scripts/collect-hashribbon.js` — 하루 1회 데이터 수집기 (`node scripts/collect.js`, Node 18+, 설치 패키지 없음)
+- `data/zmvrv.csv` — 2011-07-18부터의 일별 Z-MVRV · `data/hashribbon.csv` — 해시리본 (30/60일 평균, 항복/회복/매수 신호)
 - `.github/workflows/daily.yml` — GitHub Actions에서 매일 02:30 UTC 자동 실행
 
 ## GitHub에 올려서 자동화하기 (W3)
@@ -14,4 +14,4 @@
 4. 이후엔 매일 자동. 실패하면 Actions 탭에 빨간불 + 페이지 상단 배너
 
 ## 문서
-PRD → TRD → UI → ADR-001~004 → ROADMAP.md (진행 상황은 ROADMAP.md 상단 status board)
+PRD → TRD → UI → ADR-001~005 → ROADMAP.md (진행 상황은 ROADMAP.md 상단 status board)

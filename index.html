@@ -36,6 +36,23 @@
   .susp { color:#f0883e; }
   footer { font-size:11px; color:var(--muted); margin-top:16px; line-height:1.7; }
   footer a { color:var(--accent); text-decoration:none; }
+
+  .card + .card { margin-top:14px; }
+  .hr-head { display:flex; align-items:baseline; gap:14px; flex-wrap:wrap; margin-top:8px; }
+  .hr-state { font-size:34px; font-weight:700; }
+  .hr-state.normal { color:var(--text); } .hr-state.gray { color:#8b949e; } .hr-state.green { color:var(--green); }
+  #hr-sub { font-size:12px; color:var(--muted); margin-top:6px; }
+  #hr-signal { font-size:12px; color:var(--muted); margin-top:8px; }
+  #hr-signal.fresh { color:#58a6ff; }
+  #hr-signal b { color:#58a6ff; }
+  .dot.blue { background:#58a6ff; box-shadow:0 0 8px #58a6ff; }
+  #hr-ranges button { background:none; border:1px solid var(--line); color:var(--muted); font:inherit; font-size:11px; padding:4px 9px; cursor:pointer; margin-left:-1px; }
+  #hr-ranges button.active { color:var(--accent); border-color:var(--accent); }
+  #hr-tooltip { position:absolute; display:none; background:#000; border:1px solid var(--line); color:var(--text); font-size:11px; padding:4px 8px; pointer-events:none; white-space:nowrap; }
+  #hr-tooltip .blue { color:#58a6ff; } #hr-tooltip .green { color:var(--green); } #hr-tooltip .gray { color:#8b949e; }
+  #hr-legend { display:flex; gap:14px; font-size:11px; color:var(--muted); margin-top:6px; flex-wrap:wrap; }
+  #hr-legend i { display:inline-block; width:8px; height:8px; border-radius:50%; margin-right:5px; vertical-align:middle; }
+  #hr-legend .l30 { background:var(--accent); } #hr-legend .l60 { background:#c9d1d9; } #hr-legend .lg { background:#8b949e; } #hr-legend .lgr { background:var(--green); } #hr-legend .lb { background:#58a6ff; }
 </style>
 </head>
 <body>
@@ -56,14 +73,33 @@
     <div class="chartbox"><canvas id="chart"></canvas><div id="tooltip"></div></div>
     <footer><div id="footer-src"></div><a href="data/zmvrv.csv">$ cat data/zmvrv.csv</a></footer>
   </div>
+
+  <div class="card">
+    <h1>HASH RIBBONS</h1>
+    <div class="hr-head"><div class="hr-state" id="hr-state">—</div></div>
+    <div id="hr-sub"></div>
+    <div id="hr-signal"></div>
+    <div class="toolbar"><span>범위</span><div id="hr-ranges">
+      <button data-r="1Y">1Y</button><button data-r="3Y">3Y</button><button data-r="ALL">전체</button>
+    </div></div>
+    <div class="chartbox"><canvas id="hr-chart"></canvas><div id="hr-tooltip"></div></div>
+    <div id="hr-legend"><span><i class="l30"></i>해시레이트 30일</span><span><i class="l60"></i>60일</span><span><i class="lg"></i>항복</span><span><i class="lgr"></i>회복</span><span><i class="lb"></i>매수 신호</span></div>
+    <footer><div id="hr-footer"></div><a href="data/hashribbon.csv">$ cat data/hashribbon.csv</a></footer>
+  </div>
 </div>
 <script src="data/zmvrv.js"></script>
+<script src="data/hashribbon.js"></script>
 <script src="dashboard-core.js"></script>
+<script src="hashribbon-core.js"></script>
 <script>
 renderDashboard({
   font: 'monospace',
   colors: { line:'#f7931a', latest:'#f7931a', latestRing:'#0b0e14', suspicious:'#f0883e', grid:'#1f2733', muted:'#7d8590',
     band:{ low:'rgba(88,166,255,.07)', mid:'rgba(0,0,0,0)', hot:'rgba(227,179,65,.07)', top:'rgba(248,81,73,.09)' } }
+});
+renderHashRibbon({
+  font: 'monospace',
+  colors: { hr30:'#f7931a', hr60:'#c9d1d9', capFill:'rgba(248,81,73,.22)', gray:'#8b949e', green:'#3fb950', blue:'#58a6ff', grid:'#1f2733', muted:'#7d8590' }
 });
 </script>
 </body>
