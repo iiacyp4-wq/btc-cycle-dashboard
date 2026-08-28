@@ -7,16 +7,16 @@
 
 ## Status board (update every session)
 - **Current week:** W3 (Shadow) · **Repo:** https://github.com/iiacyp4-wq/btc-cycle-dashboard · **Live:** https://iiacyp4-wq.github.io/btc-cycle-dashboard/
-- **Last done:** Pushed to GitHub, Pages live with real data (2026-08-28). Daily workflow file NOT yet pushed (token lacks `workflow` scope).
-- **Next step:** owner runs `gh auth refresh -h github.com -s workflow` → push `.github/workflows/daily.yml` → run it once → shadow 7 days.
-- **Blockers:** GitHub token needs `workflow` scope (browser login, owner action) before the daily Action can exist.
+- **Last done:** Workflow pushed and run once manually (2026-08-28, green, 17 s). Shadow period started.
+- **Next step:** 7-day shadow: each morning compare the page value with bitcoin-data.com; expect one new row/day. Then W4 Live.
+- **Blockers:** none.
 
 ## 10-week plan (goal per week · status)
 | Week | Goal | Status |
 |---|---|---|
 | W1 | PRD · TRD · UI (3 variations, pick one) · ADR-001~004 · **verify free data source** | ✅ 2026-08-28 |
 | W2 | Collector script · full-history backfill · page wired to real data | ✅ 2026-08-28 |
-| W3 | Push to GitHub ✅ · Pages live ✅ · daily Action running ⬜ · **Shadow**: compare with reference site 7 days ⬜ | 🔄 started 2026-08-28 |
+| W3 | Push to GitHub ✅ · Pages live ✅ · daily Action running ✅ · **Shadow**: compare with reference site 7 days ⬜ | 🔄 started 2026-08-28 |
 | W4 | **Live**: stop visiting the paid site · start 30-day reliability count (PRD §8) | ⬜ |
 | W5 | Tune sanity thresholds from real data · fix whatever broke in W3–W4 | ⬜ |
 | W6 | Phase 2 #1: Hash Ribbon as a second `IndicatorSource` (repeat W2→W3 for it) | ⬜ |
@@ -47,4 +47,4 @@
 
 ## Session log (append, newest last)
 - **2026-08-28** — Wrote PRD (grilled, narrowed 4 → 1 indicator), TRD with A/B trade-off tables, UI doc + 3 HTML variations (dark terminal chosen), ADR-001~004. W1 verify: `CapRealUSD` is paid-only, but `CapMVRVCur` is free → realized cap derived; Z matches bitcoin-data.com within ±0.03 typical. Built `scripts/collect.js` (idempotent, primary+fallback, sanity rules), workflow, backfilled 2011-07-18→2026-08-27. Page reads `data/zmvrv.js`; sample data only as fallback with a visible warning.
-- **2026-08-28 (later)** — Created public repo `iiacyp4-wq/btc-cycle-dashboard`, pushed everything except the workflow (OAuth token lacks `workflow` scope), enabled Pages → live URL serves real data. Workflow push pending owner's `gh auth refresh -s workflow`.
+- **2026-08-28 (later)** — Created public repo `iiacyp4-wq/btc-cycle-dashboard`, pushed everything except the workflow (OAuth token lacks `workflow` scope), enabled Pages → live URL serves real data. Owner added `workflow` scope; workflow pushed and run once (success). Shadow started.
