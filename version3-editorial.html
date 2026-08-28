@@ -1,0 +1,67 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>Z-MVRV · Editorial</title>
+<link href="https://fonts.googleapis.com/css2?family=Playfair+Display:wght@700&family=Noto+Serif+KR:wght@400;700&display=swap" rel="stylesheet">
+<style>
+  :root { --bg:#fbf8f1; --text:#1c1a17; --muted:#7a7368; --line:#1c1a17; --accent:#c2410c; }
+  * { box-sizing:border-box; margin:0; padding:0; }
+  body { background:var(--bg); color:var(--text); font-family:"Noto Serif KR",Georgia,serif; }
+  .wrap { max-width:720px; margin:0 auto; padding:28px 20px 48px; }
+  .masthead { border-top:3px solid var(--line); border-bottom:1px solid var(--line); padding:8px 0; display:flex; justify-content:space-between; font-size:12px; letter-spacing:.12em; text-transform:uppercase; }
+  .banner { margin-top:16px; padding:10px 14px; font-size:14px; border-left:4px solid; }
+  .banner.hidden { display:none; }
+  .banner.stale { border-color:#b45309; background:#fef3c7; }
+  .banner.bad { border-color:#b91c1c; background:#fee2e2; }
+  .banner.warn { border-color:var(--accent); background:#ffedd5; }
+  h1 { font-family:"Playfair Display",Georgia,serif; font-size:44px; margin-top:26px; line-height:1; }
+  h1 small { display:block; font-family:"Noto Serif KR",serif; font-size:14px; font-weight:400; color:var(--muted); margin-top:8px; letter-spacing:.02em; }
+  .head { display:flex; align-items:baseline; gap:18px; flex-wrap:wrap; margin-top:22px; }
+  .value { font-family:"Playfair Display",Georgia,serif; font-size:96px; font-weight:700; line-height:.9; font-variant-numeric:tabular-nums; }
+  .delta { font-size:18px; } .delta.up { color:#15803d; } .delta.down { color:#b91c1c; }
+  .zone { font-size:13px; font-weight:700; text-transform:uppercase; letter-spacing:.1em; border-bottom:2px solid; padding-bottom:2px; }
+  .zone.low { color:#1d4ed8; } .zone.mid { color:var(--muted); } .zone.hot { color:#b45309; } .zone.top { color:#b91c1c; }
+  .date { font-size:13px; color:var(--muted); margin-top:10px; font-style:italic; }
+  .toolbar { display:flex; justify-content:space-between; align-items:baseline; border-top:1px solid var(--line); margin-top:28px; padding-top:10px; font-size:12px; letter-spacing:.1em; text-transform:uppercase; }
+  #ranges button { background:none; border:none; font:inherit; font-size:12px; letter-spacing:.1em; color:var(--muted); cursor:pointer; padding:0 8px; }
+  #ranges button.active { color:var(--text); text-decoration:underline; text-underline-offset:4px; }
+  .chartbox { position:relative; height:320px; margin-top:8px; }
+  canvas { width:100%; height:100%; display:block; }
+  #tooltip { position:absolute; display:none; background:var(--text); color:var(--bg); font-size:12px; padding:5px 9px; pointer-events:none; white-space:nowrap; }
+  .susp { color:#fdba74; }
+  footer { border-top:1px solid var(--line); margin-top:20px; padding-top:10px; font-size:12px; color:var(--muted); line-height:1.7; }
+  footer a { color:var(--accent); }
+</style>
+</head>
+<body>
+<div class="wrap">
+  <div class="masthead"><span>BTC Cycle Dashboard</span><span>Daily edition</span></div>
+  <div id="banner" class="banner hidden"></div>
+  <h1>Z-MVRV<small>비트코인 시장가치와 실현가치의 거리 — 사이클 위치를 읽는 한 숫자</small></h1>
+  <div class="head">
+    <div class="value" id="value">—</div>
+    <div>
+      <div class="delta" id="delta"></div>
+      <div class="zone" id="zone" style="margin-top:8px"></div>
+    </div>
+  </div>
+  <div class="date" id="date"></div>
+  <div class="toolbar"><span>Chart</span><div id="ranges">
+    <button data-r="1Y">1Y</button><button data-r="3Y">3Y</button><button data-r="ALL">전체</button>
+  </div></div>
+  <div class="chartbox"><canvas id="chart"></canvas><div id="tooltip"></div></div>
+  <footer><div id="footer-src"></div><a href="data/zmvrv.csv">원본 CSV 보기</a></footer>
+</div>
+<script src="data/zmvrv.js"></script>
+<script src="dashboard-core.js"></script>
+<script>
+renderDashboard({
+  font: 'Georgia, serif',
+  colors: { line:'#1c1a17', latest:'#c2410c', latestRing:'#fbf8f1', suspicious:'#c2410c', grid:'#e8e2d6', muted:'#9a9083',
+    band:{ low:'rgba(29,78,216,.06)', mid:'rgba(0,0,0,0)', hot:'rgba(180,83,9,.08)', top:'rgba(185,28,28,.08)' } }
+});
+</script>
+</body>
+</html>

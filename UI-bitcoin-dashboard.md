@@ -1,0 +1,52 @@
+# UI — BTC Cycle Dashboard (text mockup)
+
+**Related:** `PRD-bitcoin-dashboard.md` v2 · `Design-Doc-bitcoin-dashboard.md` · **Last updated:** 2026-08-28
+**Versions built:** `version1-classic.html` · `version2-dark-terminal.html` · `version3-editorial.html`
+(same data, same behavior — only the look differs). **Chosen 2026-08-28: version2 dark terminal → `index.html`** (ADR-004).
+
+## Screen: Dashboard (the only screen)
+A single centered column, phone-friendly: status banner on top, the big "today" number,
+the chart in the middle, a small footer with data provenance at the bottom.
+
+- **Status banner** (top, full width): hidden when fresh. Yellow when the latest row is 2 days
+  old (`"아직 오늘 데이터가 없어요 · 마지막: 2026-08-26"`), red when 3+ days
+  (`"데이터가 오래됐어요 · 2026-08-25 이후 갱신 실패"`), orange when today's row is
+  `suspicious` (`"오늘 값이 평소와 많이 달라요 — 확인 필요"`).
+- **Headline** (below banner): title `"Z-MVRV"`, then the latest value very large
+  (e.g. `2.41`), then the data date in small text (`"2026-08-27 UTC 기준"`), then the
+  change vs. yesterday (`"▲ 0.08"` / `"▼ 0.12"`).
+- **Zone label** (next to the value): plain-language reading of the number, fixed thresholds —
+  `< 0` → `"저평가 구간"`, `0–3.5` → `"중립"`, `3.5–7` → `"과열 주의"`, `> 7` → `"역사적 고점권"`.
+  Product-level hint only; not a recommendation (PRD §5).
+- **Chart** (middle, ~60% of height): line of Z-MVRV over time. Horizontal reference bands
+  at the zone thresholds (tinted). Latest point highlighted. `suspicious` points drawn in a
+  different color; `missing` days leave a visible gap, not a line across.
+- **Range toggle** (above chart, right): `1Y · 3Y · 전체` — default `3Y`. (Tiny, cheap; PRD
+  lists it as Phase 2 "should", but it costs nothing in a static page — keep it.)
+- **Footer** (bottom): `"출처: coinmetrics · 매일 자동 갱신 · 계산식: (시가총액 − 실현시총) ÷ 표준편차"`
+  and a link to the raw CSV.
+- **Empty / loading / error state**:
+  - Loading: skeleton grey box where the chart goes, number shows `"—"`.
+  - No data at all (first run): chart area says `"아직 데이터가 없어요 — 첫 수집을 기다리는 중"`.
+  - CSV fetch failed: `"데이터 파일을 불러오지 못했어요"` + retry button `"다시 시도"`.
+
+## Behavior
+- Page opens → reads `data/zmvrv.csv` → renders in < 1 s. Nothing to click for the core job.
+- Tap/hover a point on the chart → tooltip with date + value (+ `"의심"` badge if suspicious).
+- Tap range toggle → chart rescales; choice remembered in the browser.
+- Latest row is 2 days old → yellow banner; 3+ → red banner; row `suspicious` → orange banner.
+  Banner never hides the number — the last good value stays visible with its date.
+- Korea-morning case: the latest row is dated *yesterday* UTC → **no banner** (this is normal).
+- Long history (10 yrs) → chart stays readable: thin line, no per-point markers except latest.
+
+## Style
+- Mobile-first, one column, max width ~720 px on desktop.
+- Numbers in a tabular/mono-figure font so the big value doesn't jitter day to day.
+- Zone colors: blue (undervalued) · grey (neutral) · amber (caution) · red (top zone).
+  Same palette in all three versions; only the surrounding look changes.
+
+## Prompt to give Claude Code
+> "Build this as a single self-contained HTML file. [paste the sections above]. The data comes
+> from one function `getZMVRV()` that returns `[{date, value, status, source}]` — return
+> realistic sample data for now (the collector will replace it with a CSV fetch). All UI text in
+> Korean exactly as quoted. Make 3 style variations: classic light, dark terminal, editorial."
