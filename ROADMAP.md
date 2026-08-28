@@ -6,17 +6,17 @@
 > **사용법(한글):** 새 세션 시작할 때 이 파일 전체를 붙여넣고 "이어서 하자"라고 하면 됩니다. 세션 끝날 때 Claude가 Status board와 Session log를 갱신합니다.
 
 ## Status board (update every session)
-- **Current week:** W2 (Backfill done, entering W3 Shadow) · **Repo:** `Bitcoin_dashboard/` (not yet on GitHub)
-- **Last done:** W1 verify PASSED; collector built; 5,520 days of real Z-MVRV backfilled; page shows real data (0.90 on 2026-08-27).
-- **Next step:** push to a public GitHub repo → enable Pages → enable the daily Action → start the 7-day shadow period.
-- **Blockers:** none. (Needs a GitHub account + a public repo — owner action.)
+- **Current week:** W3 (Shadow) · **Repo:** https://github.com/iiacyp4-wq/btc-cycle-dashboard · **Live:** https://iiacyp4-wq.github.io/btc-cycle-dashboard/
+- **Last done:** Pushed to GitHub, Pages live with real data (2026-08-28). Daily workflow file NOT yet pushed (token lacks `workflow` scope).
+- **Next step:** owner runs `gh auth refresh -h github.com -s workflow` → push `.github/workflows/daily.yml` → run it once → shadow 7 days.
+- **Blockers:** GitHub token needs `workflow` scope (browser login, owner action) before the daily Action can exist.
 
 ## 10-week plan (goal per week · status)
 | Week | Goal | Status |
 |---|---|---|
 | W1 | PRD · TRD · UI (3 variations, pick one) · ADR-001~004 · **verify free data source** | ✅ 2026-08-28 |
 | W2 | Collector script · full-history backfill · page wired to real data | ✅ 2026-08-28 |
-| W3 | Push to GitHub · Pages live · daily Action running · **Shadow**: compare with reference site 7 days | ⬜ |
+| W3 | Push to GitHub ✅ · Pages live ✅ · daily Action running ⬜ · **Shadow**: compare with reference site 7 days ⬜ | 🔄 started 2026-08-28 |
 | W4 | **Live**: stop visiting the paid site · start 30-day reliability count (PRD §8) | ⬜ |
 | W5 | Tune sanity thresholds from real data · fix whatever broke in W3–W4 | ⬜ |
 | W6 | Phase 2 #1: Hash Ribbon as a second `IndicatorSource` (repeat W2→W3 for it) | ⬜ |
@@ -47,3 +47,4 @@
 
 ## Session log (append, newest last)
 - **2026-08-28** — Wrote PRD (grilled, narrowed 4 → 1 indicator), TRD with A/B trade-off tables, UI doc + 3 HTML variations (dark terminal chosen), ADR-001~004. W1 verify: `CapRealUSD` is paid-only, but `CapMVRVCur` is free → realized cap derived; Z matches bitcoin-data.com within ±0.03 typical. Built `scripts/collect.js` (idempotent, primary+fallback, sanity rules), workflow, backfilled 2011-07-18→2026-08-27. Page reads `data/zmvrv.js`; sample data only as fallback with a visible warning.
+- **2026-08-28 (later)** — Created public repo `iiacyp4-wq/btc-cycle-dashboard`, pushed everything except the workflow (OAuth token lacks `workflow` scope), enabled Pages → live URL serves real data. Workflow push pending owner's `gh auth refresh -s workflow`.
