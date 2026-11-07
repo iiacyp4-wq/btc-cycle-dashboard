@@ -167,7 +167,16 @@ function attachZoom(canvas, o) {
   overlay.style.cssText = 'position:absolute;top:0;bottom:0;display:none;pointer-events:none;background:' + o.color + ';border-left:1px solid ' + o.border + ';border-right:1px solid ' + o.border + ';';
   canvas.parentNode.appendChild(overlay);
   const cx = e => (e.touches ? e.touches[0].clientX : e.clientX) - canvas.getBoundingClientRect().left;
-  const show = () => { const l = Math.min(x0, x1), r = Math.max(x0, x1); overlay.style.display = 'block'; overlay.style.left = l + 'px'; overlay.style.width = (r - l) + 'px'; };
+  const label = document.createElement('div');
+  label.style.cssText = 'position:absolute;top:6px;left:50%;transform:translateX(-50%);white-space:nowrap;padding:2px 7px;border-radius:4px;font:600 12px/1.4 system-ui,sans-serif;background:rgba(0,0,0,.75);color:#fff;';
+  overlay.appendChild(label);
+  const near = px => o.getPts().reduce((b, p) => Math.abs(p.px - px) < Math.abs(b.px - px) ? p : b);
+  const show = () => {
+    const l = Math.min(x0, x1), r = Math.max(x0, x1); overlay.style.display = 'block'; overlay.style.left = l + 'px'; overlay.style.width = (r - l) + 'px';
+    if (!o.getPts().length) { label.textContent = ''; return; }
+    const a = near(l).r.date, b = near(r).r.date;
+    label.textContent = Math.round((Date.parse(b) - Date.parse(a)) / 864e5) + '일 (' + a + ' ~ ' + b + ')';
+  };
   const start = e => { dragging = true; moved = false; x0 = x1 = cx(e); if (o.onLeave) o.onLeave(); };
   const move = e => { if (!dragging) { if (o.onHover) o.onHover(e); return; } x1 = cx(e); if (Math.abs(x1 - x0) > 3) moved = true; show(); e.preventDefault && e.preventDefault(); };
   const end = () => {
@@ -175,7 +184,6 @@ function attachZoom(canvas, o) {
     if (!moved) return;
     const pts = o.getPts(); if (pts.length < 2) return;
     const l = Math.min(x0, x1), r = Math.max(x0, x1);
-    const near = px => pts.reduce((b, p) => Math.abs(p.px - px) < Math.abs(b.px - px) ? p : b);
     const a = near(l).r.date, b = near(r).r.date;
     if (a !== b) o.onZoom(a, b);
   };
