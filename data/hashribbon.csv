@@ -5608,3 +5608,4 @@ date,hr30,hr60,price,p10,p20,phase,marker,cross,status,source,note
 2026-11-22,1009.0663,1008.7981,61103.71,63181.23,69309.25,normal,,,ok,coinmetrics,
 2026-11-23,1012.5892,1012.1655,61253.22,62496.92,68489.12,normal,,,ok,coinmetrics,
 2026-11-24,1007.9742,1013.2885,59790.66,62093.91,67454.28,capitulation,gray,capitulation,ok,coinmetrics,
+2026-11-25,1005.9829,1014.2225,60267.63,61601.76,66677.5,capitulation,gray,,ok,coinmetrics,
